@@ -1,0 +1,5 @@
+# This world is for the group, not for search engines.
+# The pages also carry noindex metadata — see src/app/layout.tsx.
+
+User-agent: *
+Disallow: /
