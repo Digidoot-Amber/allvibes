@@ -54,6 +54,11 @@ The pond sets the reference for everything else:
 
 These live in `src/world/constants.ts`. Import them — don't retype the numbers.
 
+**The land is only flat out to radius 3.5.** Past that it rolls over towards
+the rim, so anything placed further out at `y = 0.64` floats in mid-air. The
+pond element has a `groundY(distance)` helper that gives the real height —
+copy the same idea if you plant anything near the edge.
+
 **Don't move or edit the pond element.** It is the spatial reference that makes
 everything else make sense.
 
@@ -74,9 +79,30 @@ everything else make sense.
 Elements are made from shapes, materials and particles written in code.
 **Don't download or import 3D model files** (`.glb`, `.gltf`, `.fbx`, `.obj`).
 
+`src/world/geometry.ts` already has the awkward shapes worked out — reuse them
+rather than starting from a cube:
+
+| Helper | What it gives you |
+|---|---|
+| `bladeGeometry()` | a leaf or petal, pointed and curling over |
+| `fallenLeafGeometry()` | a small lobed leaf to lie flat on the ground |
+| `spiralGeometry()` | a spiral tube, for veins or climbing vines |
+| `arcGeometry()` | a tube arching between two points — roots, branches |
+| `profile()` | turns `[x, y]` pairs into a `<latheGeometry>` profile |
+
+Build a shape **once** and share it between meshes. Making a new one every
+frame is the usual reason a scene turns slow.
+
 ### Keep it light — people open this on phones
 
-- Aim for **under ~40 meshes** per element.
+- Aim for **under ~40 meshes** per element. If you want more than that of the
+  *same* thing — a hundred pebbles, a field of grass — use `<Instances>` and
+  `<Instance>` from drei instead. The whole lot then costs about as much as one
+  mesh, and you can still give each instance its own colour, size and angle.
+  The pond element does this for its grass, leaf litter and pebbles.
+- Scattering something? Spread it with `ringDist`-style maths (see the pond
+  element), not a plain random distance — otherwise the middle looks crowded
+  and the outside looks bald.
 - Use `makeRng` from `src/world/rng.ts` instead of `Math.random()` when you
   scatter things, so the layout is the same on every load.
 - Wrap anything expensive in `useMemo`.
